@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#111827" />
+<title>Misión 12</title>
+<style>
+:root{
+  --bg:#0b1020;
+  --panel:#141b2f;
+  --panel2:#1b2440;
+  --text:#f8fafc;
+  --muted:#9aa6bf;
+  --accent:#7c5cff;
+  --accent2:#12d6a0;
+  --danger:#ff5f73;
+  --warning:#ffc857;
+  --blue:#4da3ff;
+  --shadow:0 24px 70px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:
+radial-gradient(circle at 10% 10%,rgba(124,92,255,.2),transparent 28%),
+radial-gradient(circle at 90% 20%,rgba(18,214,160,.14),transparent 24%),
+linear-gradient(180deg,#080d18,#0d1323 60%,#080c16);color:var(--text)}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{width:min(1100px,calc(100% - 24px));margin:auto;padding:20px 0 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-weight:900;
+background:linear-gradient(135deg,var(--accent),#4e3bd8);box-shadow:0 10px 30px rgba(124,92,255,.32)
+}
+.brand h1{margin:0;font-size:clamp(24px,5vw,38px)}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.sound-btn{
+border:1px solid rgba(255,255,255,.08);background:var(--panel);color:white;border-radius:14px;padding:10px 13px
+}
+
+.panel{
+background:linear-gradient(180deg,rgba(25,34,59,.96),rgba(16,23,41,.96));
+border:1px solid rgba(255,255,255,.07);border-radius:24px;box-shadow:var(--shadow)
+}
+.setup{padding:28px}
+.setup h2{font-size:clamp(28px,5vw,48px);margin:0 0 10px}
+.setup p{color:var(--muted);line-height:1.55}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.rule{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);padding:16px;border-radius:18px}
+.rule strong{display:block;font-size:20px;margin-bottom:4px}
+.rule span{color:var(--muted);font-size:13px}
+@media(max-width:700px){.rules{grid-template-columns:1fr}}
+.start-grid{display:grid;grid-template-columns:1fr auto;gap:10px}
+@media(max-width:600px){.start-grid{grid-template-columns:1fr}}
+input{
+width:100%;border:1px solid rgba(255,255,255,.1);background:#0e1527;color:white;border-radius:16px;
+padding:15px 16px;outline:none
+}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(124,92,255,.14)}
+.btn{
+border:0;border-radius:16px;padding:14px 18px;font-weight:900;transition:.18s transform,.18s opacity
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#5b46d9);color:white}
+.btn-green{background:linear-gradient(135deg,var(--accent2),#0faf84);color:#071812}
+.btn-red{background:linear-gradient(135deg,var(--danger),#df4257);color:white}
+.btn-yellow{background:linear-gradient(135deg,var(--warning),#e7a72b);color:#2c2106}
+.btn-ghost{background:rgba(255,255,255,.06);color:white;border:1px solid rgba(255,255,255,.08)}
+.game{display:none}
+.game.active{display:block}
+.hud{display:grid;grid-template-columns:1fr auto auto;gap:12px;margin-bottom:14px}
+@media(max-width:720px){.hud{grid-template-columns:1fr 1fr}.hud .progress-wrap{grid-column:1/-1}}
+.hud-card{padding:15px 18px;border-radius:18px;background:var(--panel);border:1px solid rgba(255,255,255,.06)}
+.hud-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:800}
+.hud-value{font-size:24px;font-weight:900;margin-top:3px}
+.progress-wrap{min-width:260px}
+.progress{
+height:13px;background:#0a0f1d;border-radius:999px;overflow:hidden;margin-top:8px;border:1px solid rgba(255,255,255,.05)
+}
+.progress > div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.35s}
+.hearts{letter-spacing:4px}
+.mission-card{padding:28px;min-height:540px;display:flex;flex-direction:column}
+.category{
+display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:8px 12px;border-radius:999px;
+background:rgba(124,92,255,.14);border:1px solid rgba(124,92,255,.28);font-size:12px;font-weight:900;letter-spacing:.6px
+}
+.mission-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-top:16px}
+.mission-head h2{font-size:clamp(30px,5vw,52px);margin:0;line-height:1.02}
+.timer{
+min-width:118px;text-align:center;padding:12px 16px;border-radius:18px;background:#0c1324;border:1px solid rgba(255,255,255,.08)
+}
+.timer .time{font-size:30px;font-weight:900}
+.timer.danger{border-color:rgba(255,95,115,.6);box-shadow:0 0 0 4px rgba(255,95,115,.08)}
+.mission-text{font-size:clamp(22px,3.4vw,36px);line-height:1.25;margin:28px 0 16px;font-weight:800}
+.extra{
+background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);padding:17px;border-radius:18px;color:#d8def0;
+font-size:18px;line-height:1.45
+}
+.answer{
+margin-top:14px;background:rgba(18,214,160,.08);border:1px solid rgba(18,214,160,.24);padding:15px;border-radius:16px;
+font-weight:800
+}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:28px}
+.actions .btn{flex:1;min-width:160px}
+.note{color:var(--muted);font-size:13px;margin-top:14px}
+.result{
+display:none;text-align:center;padding:34px
+}
+.result.show{display:block}
+.result .trophy{font-size:76px}
+.result h2{font-size:clamp(34px,6vw,60px);margin:10px 0}
+.result p{color:var(--muted);font-size:18px;line-height:1.5}
+.rank{
+max-width:560px;margin:22px auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+padding:18px;border-radius:20px;text-align:left
+}
+.flash{animation:flash .45s ease}
+@keyframes flash{50%{transform:scale(1.01);box-shadow:0 0 0 7px rgba(124,92,255,.08),var(--shadow)}}
+.hidden{display:none!important}
+.small{font-size:13px;color:var(--muted)}
+footer{text-align:center;color:#6f7a92;font-size:12px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">12</div>
+      <div>
+        <h1>Misión 12</h1>
+        <p>12 pruebas. 3 vidas. Una misión final.</p>
+      </div>
+    </div>
+    <button id="soundBtn" class="sound-btn">🔊 Sonido</button>
+  </div>
+
+  <section id="setup" class="panel setup">
+    <div class="category">🎮 JUEGO COOPERATIVO</div>
+    <h2>¿Puede tu grupo completar las 12 misiones?</h2>
+    <p>Juegan todos contra el juego. Superen pruebas bíblicas, mímica, verdadero o falso, reflexión y desafíos rápidos antes de perder las 3 vidas.</p>
+
+    <div class="rules">
+      <div class="rule"><strong>12</strong><span>misiones para completar</span></div>
+      <div class="rule"><strong>❤️❤️❤️</strong><span>3 vidas compartidas</span></div>
+      <div class="rule"><strong>45 s</strong><span>por desafío</span></div>
+    </div>
+
+    <div class="start-grid">
+      <input id="teamName" maxlength="24" placeholder="Nombre del grupo o equipo (opcional)" />
+      <button id="startBtn" class="btn btn-primary">Comenzar misión</button>
+    </div>
+  </section>
+
+  <section id="game" class="game">
+    <div class="hud">
+      <div class="hud-card progress-wrap">
+        <div class="hud-label">Progreso</div>
+        <div class="hud-value"><span id="missionNum">1</span>/12</div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+      <div class="hud-card">
+        <div class="hud-label">Puntaje</div>
+        <div id="score" class="hud-value">0</div>
+      </div>
+      <div class="hud-card">
+        <div class="hud-label">Vidas</div>
+        <div id="lives" class="hud-value hearts">❤️❤️❤️</div>
+      </div>
+    </div>
+
+    <section id="missionCard" class="panel mission-card">
+      <div id="category" class="category">📖 BIBLIA</div>
+
+      <div class="mission-head">
+        <h2 id="title">Pregunta rápida</h2>
+        <div id="timerBox" class="timer">
+          <div class="hud-label">Tiempo</div>
+          <div id="timer" class="time">00:45</div>
+        </div>
+      </div>
+
+      <div id="text" class="mission-text"></div>
+      <div id="extra" class="extra hidden"></div>
+      <div id="answer" class="answer hidden"></div>
+
+      <div id="actions" class="actions">
+        <button id="showAnswerBtn" class="btn btn-ghost hidden">Ver respuesta</button>
+        <button id="successBtn" class="btn btn-green">✅ Superada +100</button>
+        <button id="failBtn" class="btn btn-red">❌ Fallamos</button>
+      </div>
+
+      <div class="note">El grupo decide si la misión fue superada. No hace falta registrarse ni iniciar sesión.</div>
+    </section>
+  </section>
+
+  <section id="result" class="panel result">
+    <div id="resultIcon" class="trophy">🏆</div>
+    <h2 id="resultTitle">¡Misión cumplida!</h2>
+    <p id="resultText"></p>
+    <div id="rankBox" class="rank"></div>
+    <button id="restartBtn" class="btn btn-primary">Jugar otra vez</button>
+  </section>
+
+  <footer>Funciona directamente desde GitHub Pages • HTML + CSS + JavaScript</footer>
+</div>
+
+<script>
+const missions = [
+  {cat:"📖 PREGUNTA BÍBLICA", title:"Respuesta rápida", text:"¿Quién construyó el arca antes del diluvio?", answer:"Noé"},
+  {cat:"📖 PREGUNTA BÍBLICA", title:"Respuesta rápida", text:"¿Quién derrotó a Goliat?", answer:"David"},
+  {cat:"📖 PREGUNTA BÍBLICA", title:"Respuesta rápida", text:"¿Cuántos discípulos principales tuvo Jesús?", answer:"12"},
+  {cat:"📖 PREGUNTA BÍBLICA", title:"Respuesta rápida", text:"¿En qué ciudad nació Jesús?", answer:"Belén"},
+  {cat:"📖 PREGUNTA BÍBLICA", title:"Respuesta rápida", text:"¿Quién fue tragado por un gran pez?", answer:"Jonás"},
+
+  {cat:"🧠 VERDADERO O FALSO", title:"Verdadero o falso", text:"Moisés entró personalmente a la Tierra Prometida.", answer:"Falso. Moisés la vio, pero no entró."},
+  {cat:"🧠 VERDADERO O FALSO", title:"Verdadero o falso", text:"David fue rey de Israel.", answer:"Verdadero."},
+  {cat:"🧠 VERDADERO O FALSO", title:"Verdadero o falso", text:"Pablo era uno de los doce discípulos originales.", answer:"Falso."},
+  {cat:"🧠 VERDADERO O FALSO", title:"Verdadero o falso", text:"Jesús nació en Nazaret.", answer:"Falso. Nació en Belén."},
+
+  {cat:"🎭 MÍMICA BÍBLICA", title:"Sin hablar", text:"Representá a DAVID Y GOLIAT.", extra:"El resto del grupo tiene 45 segundos para adivinar."},
+  {cat:"🎭 MÍMICA BÍBLICA", title:"Sin hablar", text:"Representá a NOÉ Y EL ARCA.", extra:"No podés hablar ni hacer letras con las manos."},
+  {cat:"🎭 MÍMICA BÍBLICA", title:"Sin hablar", text:"Representá a JONÁS Y EL GRAN PEZ.", extra:"Todo vale menos hablar."},
+  {cat:"🎭 MÍMICA BÍBLICA", title:"Sin hablar", text:"Representá a MOISÉS ABRIENDO EL MAR ROJO.", extra:"El grupo debe adivinar antes de que termine el tiempo."},
+
+  {cat:"🕵️ PALABRA PROHIBIDA", title:"Hacé que adivinen", text:"Palabra: MOISÉS", extra:"No podés decir: Egipto · faraón · mar · mandamientos."},
+  {cat:"🕵️ PALABRA PROHIBIDA", title:"Hacé que adivinen", text:"Palabra: NOÉ", extra:"No podés decir: arca · animales · lluvia · diluvio."},
+  {cat:"🕵️ PALABRA PROHIBIDA", title:"Hacé que adivinen", text:"Palabra: DAVID", extra:"No podés decir: Goliat · rey · piedra · gigante."},
+  {cat:"🕵️ PALABRA PROHIBIDA", title:"Hacé que adivinen", text:"Palabra: PEDRO", extra:"No podés decir: apóstol · Jesús · negar · pescador."},
+
+  {cat:"⚡ RESPUESTA RÁPIDA", title:"En 10 segundos", text:"Nombrá 5 libros de la Biblia.", extra:"No se puede repetir ninguno.", seconds:10},
+  {cat:"⚡ RESPUESTA RÁPIDA", title:"En 10 segundos", text:"Nombrá 4 personajes del Antiguo Testamento.", seconds:10},
+  {cat:"⚡ RESPUESTA RÁPIDA", title:"En 10 segundos", text:"Nombrá 3 parábolas o enseñanzas conocidas de Jesús.", seconds:10},
+  {cat:"⚡ RESPUESTA RÁPIDA", title:"En 10 segundos", text:"Nombrá 4 mujeres de la Biblia.", seconds:10},
+
+  {cat:"🔎 ENCONTRÁ LA CITA", title:"Biblia en mano", text:"Busquen Juan 3:16.", extra:"La misión se supera cuando alguien encuentra el versículo y lo lee en voz alta."},
+  {cat:"🔎 ENCONTRÁ LA CITA", title:"Biblia en mano", text:"Busquen Filipenses 4:13.", extra:"La misión se supera cuando alguien encuentra el versículo y lo lee en voz alta."},
+  {cat:"🔎 ENCONTRÁ LA CITA", title:"Biblia en mano", text:"Busquen Salmo 23:1.", extra:"La misión se supera cuando alguien encuentra el versículo y lo lee en voz alta."},
+  {cat:"🔎 ENCONTRÁ LA CITA", title:"Biblia en mano", text:"Busquen Romanos 8:28.", extra:"La misión se supera cuando alguien encuentra el versículo y lo lee en voz alta."},
+
+  {cat:"💬 TODOS CONTRA EL JUEGO", title:"Una sola respuesta", text:"¿Qué significa para ustedes amar al prójimo en la vida cotidiana?", extra:"Tienen que acordar una respuesta entre todos."},
+  {cat:"💬 TODOS CONTRA EL JUEGO", title:"Una sola respuesta", text:"¿Qué valor cristiano consideran más importante para una amistad?", extra:"El grupo debe elegir uno y explicar por qué."},
+  {cat:"💬 TODOS CONTRA EL JUEGO", title:"Una sola respuesta", text:"¿Qué puede hacer un grupo de amigos para ayudarse a crecer en la fe?", extra:"Den al menos 3 ideas concretas."},
+
+  {cat:"🙏 MISIÓN DE FE", title:"Momento de oración", text:"Cada persona dice una cosa por la que está agradecida.", extra:"Después, alguien hace una oración breve dando gracias por todo lo compartido."},
+  {cat:"🙏 MISIÓN DE FE", title:"Momento de oración", text:"Piensen en una persona que necesite apoyo.", extra:"Hagan juntos una oración breve por esa persona."},
+
+  {cat:"🎯 DESAFÍO", title:"Reto grupal", text:"Sin ponerse de acuerdo previamente, todos señalen a la persona más probable de llegar tarde.", extra:"Si la mayoría señala a la misma persona, superan la misión."},
+  {cat:"🎯 DESAFÍO", title:"Reto grupal", text:"Cada uno tiene que decir una cualidad positiva de la persona que tiene a su derecha.", extra:"No se pueden repetir cualidades."},
+  {cat:"🎯 DESAFÍO", title:"Reto grupal", text:"Construyan entre todos una historia bíblica de 6 frases.", extra:"Cada persona agrega una frase. Tiene que tener sentido al final."},
+];
+
+const finalMissions = [
+  {cat:"🔥 MISIÓN FINAL",title:"La gran prueba",text:"En 60 segundos: nombren 10 personajes bíblicos, 5 libros de la Biblia y 3 milagros de Jesús.",extra:"Todos pueden participar. Si completan las tres partes, ganan.",seconds:60},
+  {cat:"🔥 MISIÓN FINAL",title:"La gran prueba",text:"En 60 segundos, reconstruyan entre todos una historia bíblica conocida desde el inicio hasta el final.",extra:"El grupo debe elegir una historia y contarla sin contradicciones importantes.",seconds:60},
+  {cat:"🔥 MISIÓN FINAL",title:"La gran prueba",text:"Cada persona debe decir en una frase qué significa la fe para ella.",extra:"La misión se supera cuando todos participan.",seconds:60},
+];
+
+let deck=[], currentMission=null, missionIndex=0, score=0, lives=3, timeLeft=45, timer=null, soundOn=true, finalStage=false;
+const $ = id => document.getElementById(id);
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+function beep(freq=520,duration=.08){
+  if(!soundOn) return;
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.frequency.value=freq; gain.gain.value=.045;
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime+duration);
+  }catch(e){}
+}
+
+function startGame(){
+  deck=shuffle(missions).slice(0,12);
+  missionIndex=0; score=0; lives=3; finalStage=false;
+  $("setup").classList.add("hidden");
+  $("result").classList.remove("show");
+  $("game").classList.add("active");
+  loadMission();
+}
+
+function loadMission(){
+  clearInterval(timer);
+  if(lives<=0){ return endGame(false); }
+
+  if(missionIndex>=12 && !finalStage){
+    finalStage=true;
+    currentMission=shuffle(finalMissions)[0];
+  }else if(finalStage){
+    return endGame(true);
+  }else{
+    currentMission=deck[missionIndex];
+  }
+
+  $("missionCard").classList.remove("flash");
+  void $("missionCard").offsetWidth;
+  $("missionCard").classList.add("flash");
+
+  $("category").textContent=currentMission.cat;
+  $("title").textContent=currentMission.title;
+  $("text").textContent=currentMission.text;
+
+  if(currentMission.extra){
+    $("extra").textContent=currentMission.extra;
+    $("extra").classList.remove("hidden");
+  }else $("extra").classList.add("hidden");
+
+  $("answer").classList.add("hidden");
+  $("answer").textContent=currentMission.answer ? "Respuesta: "+currentMission.answer : "";
+
+  if(currentMission.answer) $("showAnswerBtn").classList.remove("hidden");
+  else $("showAnswerBtn").classList.add("hidden");
+
+  $("missionNum").textContent=finalStage ? "FINAL" : (missionIndex+1);
+  $("progressBar").style.width = finalStage ? "100%" : `${(missionIndex/12)*100}%`;
+  updateHUD();
+
+  timeLeft=currentMission.seconds || 45;
+  updateTimer();
+  timer=setInterval(()=>{
+    timeLeft--;
+    updateTimer();
+    if(timeLeft<=0){
+      clearInterval(timer);
+      beep(180,.3);
+      $("timerBox").classList.add("danger");
+    }
+  },1000);
+}
+
+function updateTimer(){
+  const min=String(Math.floor(timeLeft/60)).padStart(2,"0");
+  const sec=String(Math.max(0,timeLeft%60)).padStart(2,"0");
+  $("timer").textContent=`${min}:${sec}`;
+  $("timerBox").classList.toggle("danger",timeLeft<=10);
+  if(timeLeft===10) beep(260,.12);
+}
+
+function updateHUD(){
+  $("score").textContent=score;
+  $("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+}
+
+function success(){
+  clearInterval(timer);
+  beep(760,.12);
+  score += finalStage ? 500 : 100;
+  if(!finalStage) missionIndex++;
+  updateHUD();
+  setTimeout(loadMission,250);
+}
+
+function fail(){
+  clearInterval(timer);
+  beep(170,.16);
+  lives--;
+  updateHUD();
+  if(finalStage){
+    setTimeout(()=>endGame(false),250);
+    return;
+  }
+  missionIndex++;
+  setTimeout(loadMission,250);
+}
+
+function endGame(win){
+  clearInterval(timer);
+  $("game").classList.remove("active");
+  $("result").classList.add("show");
+
+  const name=$("teamName").value.trim() || "El grupo";
+  if(win){
+    $("resultIcon").textContent="🏆";
+    $("resultTitle").textContent="¡Misión 12 completada!";
+    $("resultText").textContent=`${name} superó las 12 misiones y también la misión final.`;
+  }else{
+    $("resultIcon").textContent="💥";
+    $("resultTitle").textContent="La misión terminó";
+    $("resultText").textContent=`${name} se quedó sin vidas. Pueden intentarlo otra vez con un nuevo conjunto de desafíos.`;
+  }
+
+  let rank="Exploradores";
+  if(score>=1500) rank="Guardianes de la Misión";
+  else if(score>=1100) rank="Equipo Imparable";
+  else if(score>=800) rank="Buscadores de Fe";
+
+  $("rankBox").innerHTML=`<strong>Resultado</strong><br><br>
+  Puntaje: <b>${score}</b><br>
+  Vidas restantes: <b>${lives}</b><br>
+  Rango: <b>${rank}</b>`;
+}
+
+$("startBtn").addEventListener("click",startGame);
+$("successBtn").addEventListener("click",success);
+$("failBtn").addEventListener("click",fail);
+$("showAnswerBtn").addEventListener("click",()=>{$("answer").classList.remove("hidden"); beep(520,.06)});
+$("restartBtn").addEventListener("click",()=>{
+  $("result").classList.remove("show");
+  $("setup").classList.remove("hidden");
+});
+$("soundBtn").addEventListener("click",()=>{
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sonido":"🔇 Silencio";
+});
+</script>
+</body>
+</html>
